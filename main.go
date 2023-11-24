@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+// See organizeGtdFolder as the "root" of the program
+// It does the actual work. Everything else in this file is just based on watching the files
+// also look at the parser module
+
 func main() {
 	dirname := getGtdDir()
 
@@ -20,7 +24,7 @@ func main() {
 		for {
 			select {
 			case _ = <-fileWatcher.Event:
-				OrganizeGtdFolder(dirname)
+				organizeGtdFolder(dirname)
 			case err := <-fileWatcher.Error:
 				log.Fatalln(err)
 			case <-fileWatcher.Closed:
@@ -52,12 +56,7 @@ func getGtdDir() string {
 
 const numFiles = 7
 
-type GtdFile struct {
-	name  string
-	lines []string
-}
-
-func OrganizeGtdFolder(folderPath string) {
+func organizeGtdFolder(folderPath string) {
 	fileData := readGtdFolder(folderPath)
 	// output the fileData
 	for _, file := range fileData {
