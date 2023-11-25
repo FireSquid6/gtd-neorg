@@ -37,6 +37,6 @@ func parseDate(dateString string) (Date, error) {
 	return date, nil
 }
 
-func datesAreEqual(date1 Date, date2 Date) bool {
+func datesAreEqual(date1 Date, date2 *Date) bool {
 	return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day
 }

@@ -14,7 +14,6 @@ const (
 	Next
 	Done
 	Future
-	Projects
 	Trash
 	Waiting
 )
@@ -25,9 +24,10 @@ type GtdFile struct {
 }
 
 type GtdTask struct {
-	text     string
-	contexts []string
-	project  string
-	gotoList string
-	date     Date
+	text      string
+	contexts  []string
+	project   string
+	gotoList  GtdListName
+	date      Date
+	waitingOn string
 }
