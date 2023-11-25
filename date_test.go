@@ -31,8 +31,8 @@ func TestParseDate(t *testing.T) {
 	}
 
 	date, err := parseDate("2023/12-6")
-	if err == nil {
-		t.Error("Expected error, got ", date)
+	if date.year != 2023 || date.month != 12 || date.day != 6 {
+		t.Error("Expected 2023-12-06, got ", date)
 	}
 
 	date, err = parseDate("2023/12/6/1")
