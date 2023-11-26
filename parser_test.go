@@ -67,14 +67,14 @@ func Test_parseInboxTask(t *testing.T) {
 			contexts:  []string{"context"},
 			project:   "",
 			gotoList:  Waiting,
-			waitingOn: Event{"", Date{2021, 5, 15}},
+			waitingOn: Event{"", Date{5, 15, 2021}},
 		}, nil},
-		{"task that is waiting for a date and has an event", "[% 05/15/2021 \"an event\"] This is a simple task [@context]", GtdTask{
+		{"task that is waiting for a date and has an event", "[% 05/15/2021,\"an event\"] This is a simple task [@context]", GtdTask{
 			text:      "This is a simple task",
 			contexts:  []string{"context"},
 			project:   "",
 			gotoList:  Waiting,
-			waitingOn: Event{"an event", Date{2021, 5, 15}},
+			waitingOn: Event{"an event", Date{5, 15, 2021}},
 		}, nil},
 		{"task that has a project", "[$project] This is a simple task", GtdTask{
 			text:      "This is a simple task",

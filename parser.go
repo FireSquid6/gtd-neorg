@@ -37,6 +37,24 @@ func parseInboxTask(line string) (GtdTask, error) {
 			task.project = split.predata[1:]
 		case '%':
 			task.gotoList = Waiting
+
+			split.predata = split.predata[1:]
+			split.predata = strings.TrimSpace(split.predata)
+
+			eventSplit := strings.Split(split.predata, ",")
+			for _, event := range eventSplit {
+				if event[0] == '"' {
+					//trim the first and last quote
+					event = event[1 : len(event)-1]
+					task.waitingOn.event = event
+				} else {
+					date, err := parseDate(event)
+					if err != nil {
+						continue
+					}
+					task.waitingOn.date = date
+				}
+			}
 		}
 	}
 
