@@ -41,7 +41,7 @@ func Test_parseInboxTask(t *testing.T) {
 			gotoList:  Done,
 			waitingOn: emptyEvent(),
 		}, nil},
-		{"task that needs to be moved to waiting", "[\"an event\"] This is a simple task", GtdTask{
+		{"task that needs to be moved to waiting", "[% \"an event\"] This is a simple task", GtdTask{
 			text:      "This is a simple task",
 			contexts:  []string{},
 			project:   "",
@@ -62,19 +62,33 @@ func Test_parseInboxTask(t *testing.T) {
 			gotoList:  Future,
 			waitingOn: emptyEvent(),
 		}, nil},
-		{"task that has a date to wait for", "[05/15/2021] This is a simple task [@context]", GtdTask{
+		{"task that has a date to wait for", "[% 05/15/2021] This is a simple task [@context]", GtdTask{
 			text:      "This is a simple task",
 			contexts:  []string{"context"},
 			project:   "",
-			gotoList:  Inbox,
+			gotoList:  Waiting,
 			waitingOn: Event{"", Date{2021, 5, 15}},
 		}, nil},
-		{"task that is waiting for a date and has an event", "[05/15/2021 \"an event\"] This is a simple task [@context]", GtdTask{
+		{"task that is waiting for a date and has an event", "[% 05/15/2021 \"an event\"] This is a simple task [@context]", GtdTask{
 			text:      "This is a simple task",
 			contexts:  []string{"context"},
 			project:   "",
 			gotoList:  Waiting,
 			waitingOn: Event{"an event", Date{2021, 5, 15}},
+		}, nil},
+		{"task that has a project", "[$project] This is a simple task", GtdTask{
+			text:      "This is a simple task",
+			contexts:  []string{},
+			project:   "project",
+			gotoList:  Projects,
+			waitingOn: emptyEvent(),
+		}, nil},
+		{"task with multiple contexts", "This is a simple task [@context1 @context2]", GtdTask{
+			text:      "This is a simple task",
+			contexts:  []string{"context1", "context2"},
+			project:   "",
+			gotoList:  Inbox,
+			waitingOn: emptyEvent(),
 		}, nil},
 	}
 
@@ -86,7 +100,7 @@ func Test_parseInboxTask(t *testing.T) {
 					t.Errorf("Expected error %s, got %s", test.err, err)
 				}
 			} else {
-				if !tasksAreEqual(task, &test.expected) {
+				if !tasksAreEqual(task, test.expected) {
 					t.Errorf("Expected task %v, got %v", test.expected, task)
 				}
 			}
