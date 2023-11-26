@@ -7,6 +7,11 @@ type Date struct {
 	day   int
 }
 
+type Event struct {
+	event string
+	date  Date
+}
+
 type GtdListName int
 
 const (
@@ -15,8 +20,16 @@ const (
 	Done
 	Future
 	Trash
+	Projects
 	Waiting
 )
+
+func emptyDate() Date {
+	return Date{-1, -1, -1}
+}
+func emptyEvent() Event {
+	return Event{"", emptyDate()}
+}
 
 type GtdFile struct {
 	name  string
@@ -28,6 +41,5 @@ type GtdTask struct {
 	contexts  []string
 	project   string
 	gotoList  GtdListName
-	date      Date
-	waitingOn string
+	waitingOn Event
 }
