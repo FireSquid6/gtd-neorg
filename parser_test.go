@@ -5,6 +5,46 @@ import (
 	"testing"
 )
 
+func Test_parseNextTask(t *testing.T) {
+	data := []struct {
+		name     string
+		line     string
+		expected GtdTask
+		err      error
+	}{
+		{"empty line", "", GtdTask{}, errors.New("Empty line")},
+		{"no starting prefix", "I have failed", GtdTask{}, errors.New("No starting prefix")},
+		{"stay on next", "- ( ) I do nothing and stay", GtdTask{
+			text:      "I do nothing and stay",
+			contexts:  []string{},
+			project:   "",
+			gotoList:  Next,
+			waitingOn: emptyEvent(),
+		}, nil},
+		{"throw away", "- ( ) Trash me", GtdTask{
+			text:      "Trash me",
+			contexts:  []string{},
+			project:   "",
+			gotoList:  Trash,
+			waitingOn: emptyEvent(),
+		}, nil},
+		{"move to done", "- (x) I am done", GtdTask{
+			text:      "I am done",
+			contexts:  []string{},
+			project:   "",
+			gotoList:  Done,
+			waitingOn: emptyEvent(),
+		}, nil},
+		{"move to future", "- (-) send me to the future", GtdTask{
+			text:      "I am waiting",
+			contexts:  []string{},
+			project:   "",
+			gotoList:  Waiting,
+			waitingOn: emptyEvent(),
+		}, nil},
+	}
+}
+
 func Test_parseInboxTask(t *testing.T) {
 	data := []struct {
 		name     string

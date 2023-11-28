@@ -6,6 +6,18 @@ import (
 	"strings"
 )
 
+func parseNextTask(line string) (GtdTask, error) {
+	task := GtdTask{
+		text:      "",
+		contexts:  []string{},
+		project:   "",
+		gotoList:  Next,
+		waitingOn: emptyEvent(),
+	}
+
+	return task, nil
+}
+
 func parseInboxTask(line string) (GtdTask, error) {
 	task := GtdTask{
 		text:      "",
