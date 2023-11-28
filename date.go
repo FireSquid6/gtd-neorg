@@ -12,6 +12,20 @@ func getCurrentDate() Date {
 	return Date{now.Year(), int(now.Month()), now.Day()}
 }
 
+func dateToString(date Date) string {
+	// make sure the month and day are always 2 digits
+	month := strconv.Itoa(date.month)
+	if len(month) == 1 {
+		month = "0" + month
+	}
+	day := strconv.Itoa(date.day)
+	if len(day) == 1 {
+		day = "0" + day
+	}
+
+	return strconv.Itoa(date.year) + "-" + month + "-" + day
+}
+
 func parseDate(dateString string) (Date, error) {
 	dateString = strings.ReplaceAll(dateString, "-", "/")
 	parts := strings.Split(dateString, "/")
@@ -47,8 +61,8 @@ func parseRelativeDate(dateString Date, currentDate Date) (Date, error) {
 	return date, nil
 }
 
-func getDayOfTheWeek(date Date) (time.Weekday, error) {
-	dateString := strconv.Itoa(date.year) + "-" + strconv.Itoa(date.month) + "-" + strconv.Itoa(date.day)
+func getDayOfTheWeek(date Date) (int, error) {
+	dateString := dateToString(date)
 
 	layout := "2006-01-02" // The layout of the input date
 	t, err := time.Parse(layout, dateString)
@@ -56,7 +70,7 @@ func getDayOfTheWeek(date Date) (time.Weekday, error) {
 		return -1, err
 	}
 
-	dayOfWeek := t.Weekday()
+	dayOfWeek := int(t.Weekday())
 
 	return dayOfWeek, nil
 }

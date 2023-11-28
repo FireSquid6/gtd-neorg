@@ -56,8 +56,8 @@ func Test_getDayOfTheWeek(t *testing.T) {
 
 	date = Date{2023, 12, 6}
 	data, err = getDayOfTheWeek(date)
-	if data != 4 {
-		t.Error("Expected 4, got ", err)
+	if data != 3 {
+		t.Error("Expected 4, got", data)
 	}
 
 	date = Date{2023, 11, 28}
