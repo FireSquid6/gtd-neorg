@@ -40,3 +40,23 @@ func parseDate(dateString string) (Date, error) {
 func datesAreEqual(date1 Date, date2 *Date) bool {
 	return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day
 }
+
+func parseRelativeDate(dateString Date, currentDate Date) (Date, error) {
+	date := Date{0, 0, 0}
+
+	return date, nil
+}
+
+func getDayOfTheWeek(date Date) (time.Weekday, error) {
+	dateString := strconv.Itoa(date.year) + "-" + strconv.Itoa(date.month) + "-" + strconv.Itoa(date.day)
+
+	layout := "2006-01-02" // The layout of the input date
+	t, err := time.Parse(layout, dateString)
+	if err != nil {
+		return -1, err
+	}
+
+	dayOfWeek := t.Weekday()
+
+	return dayOfWeek, nil
+}

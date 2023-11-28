@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -43,6 +44,8 @@ func Test_parseNextTask(t *testing.T) {
 			waitingOn: emptyEvent(),
 		}, nil},
 	}
+
+	fmt.Println(data)
 }
 
 func Test_parseInboxTask(t *testing.T) {

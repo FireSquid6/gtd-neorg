@@ -46,3 +46,29 @@ func TestParseDate(t *testing.T) {
 	}
 
 }
+
+func Test_getDayOfTheWeek(t *testing.T) {
+	date := Date{2023, 11, 27}
+	data, err := getDayOfTheWeek(date)
+	if data != 1 {
+		t.Error("Expected 3, got ", err)
+	}
+
+	date = Date{2023, 12, 6}
+	data, err = getDayOfTheWeek(date)
+	if data != 4 {
+		t.Error("Expected 4, got ", err)
+	}
+
+	date = Date{2023, 11, 28}
+	data, err = getDayOfTheWeek(date)
+	if data != 2 {
+		t.Error("Expected 2, got ", err)
+	}
+
+	date = Date{2023, 11, 29}
+	data, err = getDayOfTheWeek(date)
+	if data != 3 {
+		t.Error("Expected 2, got ", err)
+	}
+}
