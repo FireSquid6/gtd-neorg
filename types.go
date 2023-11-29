@@ -7,12 +7,21 @@ type Date struct {
 	day   int
 }
 
-type Event struct {
-	event string
-	date  Date
+type Weekday int
+
+type Tag struct {
+	name    string
+	tagType TagType
 }
 
-type Weekday int
+type TagType int
+
+const (
+	Project = iota
+	General
+	Who
+	Where
+)
 
 const (
 	Sunday Weekday = iota
@@ -28,7 +37,7 @@ type GtdListName int
 
 const (
 	Inbox GtdListName = iota
-	Next
+	Agenda
 	Done
 	Future
 	Trash
@@ -39,9 +48,6 @@ const (
 func emptyDate() Date {
 	return Date{-1, -1, -1}
 }
-func emptyEvent() Event {
-	return Event{"", emptyDate()}
-}
 
 type GtdFile struct {
 	name  string
@@ -49,9 +55,11 @@ type GtdFile struct {
 }
 
 type GtdTask struct {
-	text      string
-	contexts  []string
-	project   string
-	gotoList  GtdListName
-	waitingOn Event
+	text     string
+	contexts []string
+	project  string
+	gotoList GtdListName
+	date     Date
 }
+
+type GtdEvent struct{}

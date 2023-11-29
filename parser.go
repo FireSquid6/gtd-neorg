@@ -1,88 +1,9 @@
 package main
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 )
-
-func parseNextTask(line string) (GtdTask, error) {
-	task := GtdTask{
-		text:      "",
-		contexts:  []string{},
-		project:   "",
-		gotoList:  Next,
-		waitingOn: emptyEvent(),
-	}
-
-	return task, nil
-}
-
-func parseInboxTask(line string) (GtdTask, error) {
-	task := GtdTask{
-		text:      "",
-		contexts:  []string{},
-		project:   "",
-		gotoList:  Inbox,
-		waitingOn: emptyEvent(),
-	}
-	if line == "" {
-		return task, errors.New("Empty line")
-	}
-
-	split := splitBrackets(line)
-	split.payload = strings.TrimSpace(split.payload)
-	task.text = split.payload
-
-	if split.predata != "" {
-		switch split.predata[0] {
-		case '!':
-			task.gotoList = Next
-		case 'x':
-			task.gotoList = Done
-		case '?':
-			task.gotoList = Future
-		case '_':
-			task.gotoList = Trash
-		case '$':
-			task.gotoList = Projects
-			task.project = split.predata[1:]
-		case '%':
-			task.gotoList = Waiting
-
-			split.predata = split.predata[1:]
-			split.predata = strings.TrimSpace(split.predata)
-
-			eventSplit := strings.Split(split.predata, ",")
-			for _, event := range eventSplit {
-				if event[0] == '"' {
-					//trim the first and last quote
-					event = event[1 : len(event)-1]
-					task.waitingOn.event = event
-				} else {
-					date, err := parseDate(event)
-					if err != nil {
-						continue
-					}
-					task.waitingOn.date = date
-				}
-			}
-		}
-	}
-
-	// parse postdata to get contexts
-	if split.postdata != "" {
-		split.postdata = strings.TrimSpace(split.postdata)
-		split.postdata = strings.ReplaceAll(split.postdata, "@", "")
-
-		contexts := strings.Split(split.postdata, " ")
-		for _, context := range contexts {
-			task.contexts = append(task.contexts, context)
-		}
-	}
-
-	return task, nil
-}
 
 func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
 	return reflect.DeepEqual(task1, task2)
