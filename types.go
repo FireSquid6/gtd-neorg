@@ -38,10 +38,8 @@ type GtdListName int
 const (
 	Inbox GtdListName = iota
 	Agenda
-	Done
-	Future
+	Backlog
 	Trash
-	Projects
 	Waiting
 )
 
