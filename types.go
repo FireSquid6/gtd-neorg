@@ -12,6 +12,18 @@ type Event struct {
 	date  Date
 }
 
+type Weekday int
+
+const (
+	Sunday Weekday = iota
+	Monday
+	Tuesday
+	Wednesday
+	Thursday
+	Friday
+	Saturday
+)
+
 type GtdListName int
 
 const (

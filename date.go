@@ -55,10 +55,34 @@ func datesAreEqual(date1 Date, date2 *Date) bool {
 	return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day
 }
 
-func parseRelativeDate(dateString Date, currentDate Date) (Date, error) {
-	date := Date{0, 0, 0}
+func parseRelativeDate(dateString string, currentDate Date) (Date, error) {
+	lowercaseDateString := strings.ToLower(dateString)
+	switch lowercaseDateString {
+	case "today":
+		return currentDate, nil
+	case "tomorrow":
+		return incrementDate(currentDate), nil
+	case "yesterday":
+		return decrementDate(currentDate), nil
+	case "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday":
+		weekday, err := getWeekdayFromString(lowercaseDateString)
+		if err != nil {
+			return Date{0, 0, 0}, err
+		}
+		date, err := getNextDayOfTheWeek(weekday, currentDate)
+		if err != nil {
+			return Date{0, 0, 0}, err
+		}
 
-	return date, nil
+		return date, nil
+	default:
+		// try to parse the date
+		date, err := parseDate(dateString)
+		if err != nil {
+			return Date{0, 0, 0}, err
+		}
+		return date, nil
+	}
 }
 
 func getDayOfTheWeek(date Date) (int, error) {
@@ -73,4 +97,87 @@ func getDayOfTheWeek(date Date) (int, error) {
 	dayOfWeek := int(t.Weekday())
 
 	return dayOfWeek, nil
+}
+
+func decrementDate(date Date) Date {
+	date.day--
+
+	return validateDate(date)
+}
+
+func incrementDate(date Date) Date {
+	date.day++
+
+	return validateDate(date)
+}
+
+func validateDate(date Date) Date {
+	switch date.month {
+	case 1, 3, 5, 7, 8, 10, 12:
+		if date.day > 31 {
+			date.day = 1
+			date.month++
+		}
+	case 4, 6, 9, 11:
+		if date.day > 30 {
+			date.day = 1
+			date.month++
+		}
+	case 2:
+		if date.day > 28 {
+			date.day = 1
+			date.month++
+		}
+	}
+
+	if date.month > 12 {
+		date.month = 1
+		date.year++
+	}
+
+	return date
+}
+
+func getNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
+	// get the current day of the week
+	currentDayOfWeek, err := getDayOfTheWeek(currentDate)
+	if err != nil {
+		return Date{0, 0, 0}, err
+	}
+
+	// get the difference between the current day of the week and the desired day of the week
+	difference := int(weekday) - currentDayOfWeek
+
+	// if the difference is negative, add 7 to it
+	if difference < 0 {
+		difference += 7
+	}
+
+	// increment the date by the difference
+	for i := 0; i < difference; i++ {
+		currentDate = incrementDate(currentDate)
+	}
+
+	return currentDate, nil
+}
+
+func getWeekdayFromString(weekday string) (Weekday, error) {
+	switch strings.ToLower(weekday) {
+	case "monday":
+		return Monday, nil
+	case "tuesday":
+		return Tuesday, nil
+	case "wednesday":
+		return Wednesday, nil
+	case "thursday":
+		return Thursday, nil
+	case "friday":
+		return Friday, nil
+	case "saturday":
+		return Saturday, nil
+	case "sunday":
+		return Sunday, nil
+	default:
+		return -1, errors.New("Invalid weekday")
+	}
 }
