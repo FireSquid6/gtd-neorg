@@ -148,8 +148,8 @@ func getNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
 	// get the difference between the current day of the week and the desired day of the week
 	difference := int(weekday) - currentDayOfWeek
 
-	// if the difference is negative, add 7 to it
-	if difference < 0 {
+	// if the difference is negative or 0, add 7 to it
+	if difference <= 0 {
 		difference += 7
 	}
 

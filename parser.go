@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -39,13 +40,42 @@ func splitInboxLine(line string) (splits splitLine) {
 
 }
 
-func parseInboxTask(line string) (GtdTask, error) {
-	return GtdTask{
-		text:     line,
+func parseInboxTask(line string, currentDate Date) (GtdTask, error) {
+	task := GtdTask{
+		text:     "",
 		tags:     []string{},
-		gotoList: Inbox,
 		date:     emptyDate(),
-	}, nil
+		gotoList: Inbox,
+	}
+
+	split := splitInboxLine(line)
+	task.text = split.text
+
+	switch split.predata {
+	case "":
+		task.gotoList = Inbox
+	case "_":
+		task.gotoList = Trash
+	case "?":
+		task.gotoList = Backlog
+	default:
+		date, err := parseRelativeDate(split.predata, currentDate)
+		if err != nil {
+			return GtdTask{}, err
+		}
+		task.gotoList = Agenda
+		task.date = date
+	}
+
+	tagSplit := strings.Split(split.postdata, ",")
+	for _, tag := range tagSplit {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			task.tags = append(task.tags, tag)
+		}
+	}
+
+	return task, nil
 }
 
 func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
