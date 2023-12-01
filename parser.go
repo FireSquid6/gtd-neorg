@@ -37,7 +37,52 @@ func splitInboxLine(line string) (splits splitLine) {
 		text:     text,
 		postdata: postdata,
 	}
+}
 
+func parseTags(postdata string) []string {
+	tags := []string{}
+	tagSplit := strings.Split(postdata, ",")
+
+	for _, tag := range tagSplit {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+
+	return tags
+}
+
+type ParsedPredata struct {
+	gotoList GtdListName
+	date     Date
+}
+
+func parseInboxPredata(predata string, currentDate Date) (ParsedPredata, error) {
+	parsed := ParsedPredata{
+		gotoList: Inbox,
+		date:     emptyDate(),
+	}
+
+	if predata == "" {
+		return parsed, nil
+	}
+
+	switch predata {
+	case "_":
+		parsed.gotoList = Trash
+	case "?":
+		parsed.gotoList = Backlog
+	default:
+		date, err := parseRelativeDate(predata, currentDate)
+		if err != nil {
+			return ParsedPredata{}, err
+		}
+		parsed.gotoList = Agenda
+		parsed.date = date
+	}
+
+	return parsed, nil
 }
 
 func parseInboxTask(line string, currentDate Date) (GtdTask, error) {
@@ -51,29 +96,14 @@ func parseInboxTask(line string, currentDate Date) (GtdTask, error) {
 	split := splitInboxLine(line)
 	task.text = split.text
 
-	switch split.predata {
-	case "":
-		task.gotoList = Inbox
-	case "_":
-		task.gotoList = Trash
-	case "?":
-		task.gotoList = Backlog
-	default:
-		date, err := parseRelativeDate(split.predata, currentDate)
-		if err != nil {
-			return GtdTask{}, err
-		}
-		task.gotoList = Agenda
-		task.date = date
+	parsedPredata, err := parseInboxPredata(split.predata, currentDate)
+	if err != nil {
+		return GtdTask{}, err
 	}
+	task.gotoList = parsedPredata.gotoList
+	task.date = parsedPredata.date
 
-	tagSplit := strings.Split(split.postdata, ",")
-	for _, tag := range tagSplit {
-		tag = strings.TrimSpace(tag)
-		if tag != "" {
-			task.tags = append(task.tags, tag)
-		}
-	}
+	task.tags = parseTags(split.postdata)
 
 	return task, nil
 }
