@@ -7,6 +7,21 @@ import (
 	"strings"
 )
 
+func parseTags(postdata string) []string {
+	tags := []string{}
+	tagSplit := strings.Split(postdata, ",")
+
+	for _, tag := range tagSplit {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+
+	return tags
+}
+
+// SPLITTING LINES
 type splitLine struct {
 	predata  string
 	text     string
@@ -39,20 +54,7 @@ func splitInboxLine(line string) (splits splitLine) {
 	}
 }
 
-func parseTags(postdata string) []string {
-	tags := []string{}
-	tagSplit := strings.Split(postdata, ",")
-
-	for _, tag := range tagSplit {
-		tag = strings.TrimSpace(tag)
-		if tag != "" {
-			tags = append(tags, tag)
-		}
-	}
-
-	return tags
-}
-
+// PARSING PREDATA
 type ParsedPredata struct {
 	gotoList GtdListName
 	date     Date
@@ -85,6 +87,7 @@ func parseInboxPredata(predata string, currentDate Date) (ParsedPredata, error) 
 	return parsed, nil
 }
 
+// INBOX SPECIFIC PARSING
 func parseInboxTask(line string, currentDate Date) (GtdTask, error) {
 	task := GtdTask{
 		text:     "",
