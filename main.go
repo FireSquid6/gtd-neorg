@@ -75,7 +75,6 @@ func readGtdFolder(folderPath string) [numFiles]GtdFile {
 
 	for i, file := range fileNames {
 		filePath := folderPath + "/" + file + ".norg"
-		ensureFileExists(filePath)
 
 		lines := readFile(filePath)
 		fileData[i] = GtdFile{file, lines}
