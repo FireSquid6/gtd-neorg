@@ -54,8 +54,7 @@ type GtdFile struct {
 
 type GtdTask struct {
 	text     string
-	contexts []string
-	project  string
+	tags     []string
 	gotoList GtdListName
 	date     Date
 }
