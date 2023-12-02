@@ -2,10 +2,12 @@ package parser
 
 import (
 	//"fmt"
-	"github.com/firesquid6/negtd/date"
+	"errors"
 	"reflect"
 	"regexp"
 	"strings"
+
+	"github.com/firesquid6/negtd/date"
 )
 
 type GtdTask struct {
@@ -131,4 +133,50 @@ func parseInboxTask(line string, currentDate date.Date) (GtdTask, error) {
 
 func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
 	return reflect.DeepEqual(task1, task2)
+}
+
+// AGENDA SPECIFIC PARSING
+func splitAgendaLine(line string) (splitLine, error) {
+	split := splitLine{}
+
+	for strings.HasPrefix(line, " ") {
+		line = strings.TrimPrefix(line, " ")
+	}
+
+	if !strings.HasPrefix(line, "- (") {
+		return splitLine{}, errors.New("Line does not start with - (")
+	}
+	line = strings.TrimPrefix(line, "- (")
+	type readerState int
+	const (
+		readingPredata readerState = iota
+		readingText
+		readingPostdata
+	)
+	state := readingPredata
+
+	for _, c := range line {
+		switch state {
+		case readingPredata:
+			if c == ')' {
+				state = readingText
+			} else {
+				split.predata += string(c)
+			}
+		case readingText:
+			if c == '[' {
+				state = readingPostdata
+			} else {
+				split.text += string(c)
+			}
+		case readingPostdata:
+			if c == ']' {
+				break
+			} else {
+				split.postdata += string(c)
+			}
+		}
+	}
+
+	return split, nil
 }

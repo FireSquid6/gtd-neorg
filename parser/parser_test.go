@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"testing"
@@ -175,6 +176,68 @@ func Test_parseInboxTask(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 		if !tasksAreEqual(actual, d.expected) {
+			t.Errorf("Expected %v, got %v", d.expected, actual)
+		}
+	}
+}
+
+func Test_splitAgendaTask(t *testing.T) {
+	data := []struct {
+		input    string
+		expected splitLine
+		err      error
+	}{
+		{
+			input: "- ( ) This is a task",
+			expected: splitLine{
+				predata:  "",
+				text:     "This is a task",
+				postdata: "",
+			},
+			err: nil,
+		},
+		{
+			input: "- (stuff over here) This is a task",
+			expected: splitLine{
+				predata:  "stuff over here",
+				text:     "This is a task",
+				postdata: "",
+			},
+			err: nil,
+		},
+		{
+			input: "- (stuff over here) This is a task [with postdata]",
+			expected: splitLine{
+				predata:  "stuff over here",
+				text:     "This is a task",
+				postdata: "with postdata",
+			},
+		},
+		{
+			input: "     - ( ) lots of spaces for no reason",
+			expected: splitLine{
+				predata:  "",
+				text:     "lots of spaces for no reason",
+				postdata: "",
+			},
+		},
+		{
+			input: "I should fail",
+			expected: splitLine{
+				predata:  "",
+				text:     "",
+				postdata: "",
+			},
+			err: errors.New(""),
+		},
+	}
+
+	for _, d := range data {
+		actual, err := splitAgendaLine(d.input)
+		if err != nil && d.err == nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+		if !reflect.DeepEqual(actual, d.expected) {
 			t.Errorf("Expected %v, got %v", d.expected, actual)
 		}
 	}
