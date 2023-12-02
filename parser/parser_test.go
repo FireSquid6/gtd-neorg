@@ -1,6 +1,7 @@
-package main
+package parser
 
 import (
+	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"testing"
 )
@@ -58,7 +59,7 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "This is a task",
 				tags:     []string{},
 				gotoList: Inbox,
-				date:     emptyDate(),
+				date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
@@ -68,7 +69,7 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the trash",
 				tags:     []string{},
 				gotoList: Trash,
-				date:     emptyDate(),
+				date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
@@ -78,7 +79,7 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the backlog",
 				tags:     []string{},
 				gotoList: Backlog,
-				date:     emptyDate(),
+				date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
@@ -88,10 +89,10 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the agenda",
 				tags:     []string{},
 				gotoList: Agenda,
-				date: Date{
-					year:  2023,
-					month: 1,
-					day:   1,
+				date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   1,
 				},
 			},
 			err: nil,
@@ -102,10 +103,10 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the agenda",
 				tags:     []string{},
 				gotoList: Agenda,
-				date: Date{
-					year:  2023,
-					month: 1,
-					day:   1,
+				date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   1,
 				},
 			},
 			err: nil,
@@ -115,10 +116,10 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the agenda",
 				tags:     []string{},
 				gotoList: Agenda,
-				date: Date{
-					year:  2023,
-					month: 1,
-					day:   2, // January 1st is a Sunday. The next monday is January 2nd.
+				date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   2, // January 1st is a Sunday. The next monday is January 2nd.
 				},
 			},
 			err: nil,
@@ -129,10 +130,10 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the agenda",
 				tags:     []string{},
 				gotoList: Agenda,
-				date: Date{
-					year:  2023,
-					month: 1,
-					day:   8,
+				date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   8,
 				},
 			},
 			err: nil,
@@ -143,10 +144,10 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "Send me to the agenda",
 				tags:     []string{},
 				gotoList: Agenda,
-				date: Date{
-					year:  2023,
-					month: 1,
-					day:   2,
+				date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   2,
 				},
 			},
 			err: nil,
@@ -157,17 +158,17 @@ func Test_parseInboxTask(t *testing.T) {
 				text:     "I have tags",
 				tags:     []string{"tag1", "tag2"},
 				gotoList: Inbox,
-				date:     emptyDate(),
+				date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
 	}
 
 	for _, d := range data {
-		currentDate := Date{
-			year:  2023,
-			month: 1,
-			day:   1,
+		currentDate := date.Date{
+			Year:  2023,
+			Month: 1,
+			Day:   1,
 		}
 		actual, err := parseInboxTask(d.input, currentDate)
 		if err != nil {

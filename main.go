@@ -8,9 +8,28 @@ import (
 	"time"
 )
 
+type GtdFile struct {
+	Name  string
+	Lines []string
+}
+
 // See organizeGtdFolder as the "root" of the program
 // It does the actual work. Everything else in this file is just based on watching the files
 // also look at the parser module
+
+type Tag struct {
+	name    string
+	tagType TagType
+}
+
+type TagType int
+
+const (
+	Project = iota
+	General
+	Who
+	Where
+)
 
 func main() {
 	dirname := getGtdDir()
@@ -60,8 +79,8 @@ func organizeGtdFolder(folderPath string) {
 	fileData := readGtdFolder(folderPath)
 	// output the fileData
 	for _, file := range fileData {
-		log.Println(file.name)
-		for _, line := range file.lines {
+		log.Println(file.Name)
+		for _, line := range file.Lines {
 			log.Println("    " + line)
 		}
 	}
@@ -77,7 +96,7 @@ func readGtdFolder(folderPath string) [numFiles]GtdFile {
 		filePath := folderPath + "/" + file + ".norg"
 
 		lines := readFile(filePath)
-		fileData[i] = GtdFile{file, lines}
+		fileData[i] = GtdFile{Name: file, Lines: lines}
 	}
 
 	return fileData

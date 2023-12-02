@@ -1,10 +1,28 @@
-package main
+package parser
 
 import (
 	//"fmt"
+	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"regexp"
 	"strings"
+)
+
+type GtdTask struct {
+	text     string
+	tags     []string
+	gotoList GtdListName
+	date     date.Date
+}
+
+type GtdListName int
+
+const (
+	Inbox GtdListName = iota
+	Agenda
+	Backlog
+	Trash
+	Waiting
 )
 
 func parseTags(postdata string) []string {
@@ -57,13 +75,13 @@ func splitInboxLine(line string) (splits splitLine) {
 // PARSING PREDATA
 type ParsedPredata struct {
 	gotoList GtdListName
-	date     Date
+	date     date.Date
 }
 
-func parseInboxPredata(predata string, currentDate Date) (ParsedPredata, error) {
+func parseInboxPredata(predata string, currentDate date.Date) (ParsedPredata, error) {
 	parsed := ParsedPredata{
 		gotoList: Inbox,
-		date:     emptyDate(),
+		date:     date.EmptyDate(),
 	}
 
 	if predata == "" {
@@ -76,7 +94,7 @@ func parseInboxPredata(predata string, currentDate Date) (ParsedPredata, error) 
 	case "?":
 		parsed.gotoList = Backlog
 	default:
-		date, err := parseRelativeDate(predata, currentDate)
+		date, err := date.ParseRelativeDate(predata, currentDate)
 		if err != nil {
 			return ParsedPredata{}, err
 		}
@@ -88,11 +106,11 @@ func parseInboxPredata(predata string, currentDate Date) (ParsedPredata, error) 
 }
 
 // INBOX SPECIFIC PARSING
-func parseInboxTask(line string, currentDate Date) (GtdTask, error) {
+func parseInboxTask(line string, currentDate date.Date) (GtdTask, error) {
 	task := GtdTask{
 		text:     "",
 		tags:     []string{},
-		date:     emptyDate(),
+		date:     date.EmptyDate(),
 		gotoList: Inbox,
 	}
 

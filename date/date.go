@@ -1,4 +1,4 @@
-package main
+package date
 
 import (
 	"errors"
@@ -7,26 +7,48 @@ import (
 	"time"
 )
 
-func getCurrentDate() Date {
+type Weekday int
+
+const (
+	Sunday Weekday = iota
+	Monday
+	Tuesday
+	Wednesday
+	Thursday
+	Friday
+	Saturday
+)
+
+func EmptyDate() Date {
+	return Date{-1, -1, -1}
+}
+
+type Date struct {
+	Year  int
+	Month int
+	Day   int
+}
+
+func GetCurrentDate() Date {
 	now := time.Now()
 	return Date{now.Year(), int(now.Month()), now.Day()}
 }
 
-func dateToString(date Date) string {
+func DateToString(date Date) string {
 	// make sure the month and day are always 2 digits
-	month := strconv.Itoa(date.month)
+	month := strconv.Itoa(date.Month)
 	if len(month) == 1 {
 		month = "0" + month
 	}
-	day := strconv.Itoa(date.day)
+	day := strconv.Itoa(date.Day)
 	if len(day) == 1 {
 		day = "0" + day
 	}
 
-	return strconv.Itoa(date.year) + "-" + month + "-" + day
+	return strconv.Itoa(date.Year) + "-" + month + "-" + day
 }
 
-func parseDate(dateString string) (Date, error) {
+func ParseDate(dateString string) (Date, error) {
 	dateString = strings.ReplaceAll(dateString, "-", "/")
 	parts := strings.Split(dateString, "/")
 	intParts := make([]int, 3)
@@ -41,9 +63,9 @@ func parseDate(dateString string) (Date, error) {
 			intParts[i] = intPart
 		}
 
-		date.day = intParts[2]
-		date.month = intParts[1]
-		date.year = intParts[0]
+		date.Day = intParts[2]
+		date.Month = intParts[1]
+		date.Year = intParts[0]
 	} else {
 		return Date{0, 0, 0}, errors.New("Invalid date format. Multiple parts detected")
 	}
@@ -52,10 +74,10 @@ func parseDate(dateString string) (Date, error) {
 }
 
 func datesAreEqual(date1 Date, date2 *Date) bool {
-	return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day
+	return date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day
 }
 
-func parseRelativeDate(dateString string, currentDate Date) (Date, error) {
+func ParseRelativeDate(dateString string, currentDate Date) (Date, error) {
 	lowercaseDateString := strings.ToLower(dateString)
 	switch lowercaseDateString {
 	case "today":
@@ -65,11 +87,11 @@ func parseRelativeDate(dateString string, currentDate Date) (Date, error) {
 	case "yesterday":
 		return decrementDate(currentDate), nil
 	case "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday":
-		weekday, err := getWeekdayFromString(lowercaseDateString)
+		weekday, err := GetWeekdayFromString(lowercaseDateString)
 		if err != nil {
 			return Date{0, 0, 0}, err
 		}
-		date, err := getNextDayOfTheWeek(weekday, currentDate)
+		date, err := GetNextDayOfTheWeek(weekday, currentDate)
 		if err != nil {
 			return Date{0, 0, 0}, err
 		}
@@ -77,7 +99,7 @@ func parseRelativeDate(dateString string, currentDate Date) (Date, error) {
 		return date, nil
 	default:
 		// try to parse the date
-		date, err := parseDate(dateString)
+		date, err := ParseDate(dateString)
 		if err != nil {
 			return Date{0, 0, 0}, err
 		}
@@ -85,8 +107,8 @@ func parseRelativeDate(dateString string, currentDate Date) (Date, error) {
 	}
 }
 
-func getDayOfTheWeek(date Date) (int, error) {
-	dateString := dateToString(date)
+func GetDayOfTheWeek(date Date) (int, error) {
+	dateString := DateToString(date)
 
 	layout := "2006-01-02" // The layout of the input date
 	t, err := time.Parse(layout, dateString)
@@ -100,47 +122,47 @@ func getDayOfTheWeek(date Date) (int, error) {
 }
 
 func decrementDate(date Date) Date {
-	date.day--
+	date.Day--
 
 	return validateDate(date)
 }
 
 func incrementDate(date Date) Date {
-	date.day++
+	date.Day++
 
 	return validateDate(date)
 }
 
 func validateDate(date Date) Date {
-	switch date.month {
+	switch date.Month {
 	case 1, 3, 5, 7, 8, 10, 12:
-		if date.day > 31 {
-			date.day = 1
-			date.month++
+		if date.Day > 31 {
+			date.Day = 1
+			date.Month++
 		}
 	case 4, 6, 9, 11:
-		if date.day > 30 {
-			date.day = 1
-			date.month++
+		if date.Day > 30 {
+			date.Day = 1
+			date.Month++
 		}
 	case 2:
-		if date.day > 28 {
-			date.day = 1
-			date.month++
+		if date.Day > 28 {
+			date.Day = 1
+			date.Month++
 		}
 	}
 
-	if date.month > 12 {
-		date.month = 1
-		date.year++
+	if date.Month > 12 {
+		date.Month = 1
+		date.Year++
 	}
 
 	return date
 }
 
-func getNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
+func GetNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
 	// get the current day of the week
-	currentDayOfWeek, err := getDayOfTheWeek(currentDate)
+	currentDayOfWeek, err := GetDayOfTheWeek(currentDate)
 	if err != nil {
 		return Date{0, 0, 0}, err
 	}
@@ -161,7 +183,7 @@ func getNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
 	return currentDate, nil
 }
 
-func getWeekdayFromString(weekday string) (Weekday, error) {
+func GetWeekdayFromString(weekday string) (Weekday, error) {
 	switch strings.ToLower(weekday) {
 	case "monday":
 		return Monday, nil
