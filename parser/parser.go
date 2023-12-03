@@ -1,7 +1,6 @@
 package parser
 
 import (
-	//"fmt"
 	"errors"
 	"reflect"
 	"regexp"
@@ -136,47 +135,57 @@ func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
 }
 
 // AGENDA SPECIFIC PARSING
-func splitAgendaLine(line string) (splitLine, error) {
-	split := splitLine{}
-
-	for strings.HasPrefix(line, " ") {
-		line = strings.TrimPrefix(line, " ")
+func splitAgendaLine(input string) (splitLine, error) {
+	input = trimBeginningWhitespace(input)
+	split := splitLine{
+		predata:  "",
+		text:     "",
+		postdata: "",
 	}
 
-	if !strings.HasPrefix(line, "- (") {
-		return splitLine{}, errors.New("Line does not start with - (")
+	if !strings.HasPrefix(input, "- ") {
+		return split, errors.New("Line does not start with a dash")
 	}
-	line = strings.TrimPrefix(line, "- (")
-	type readerState int
-	const (
-		readingPredata readerState = iota
-		readingText
-		readingPostdata
-	)
-	state := readingPredata
+	input = strings.TrimPrefix(input, "- ")
+	input = trimBeginningWhitespace(input)
 
-	for _, c := range line {
-		switch state {
-		case readingPredata:
-			if c == ')' {
-				state = readingText
-			} else {
-				split.predata += string(c)
-			}
-		case readingText:
-			if c == '[' {
-				state = readingPostdata
-			} else {
-				split.text += string(c)
-			}
-		case readingPostdata:
-			if c == ']' {
-				break
-			} else {
-				split.postdata += string(c)
-			}
-		}
+	firstParenthesis := strings.Index(input, "(")
+	lastParenthesis := strings.Index(input, ")")
+
+	if firstParenthesis != -1 && lastParenthesis != -1 && firstParenthesis < lastParenthesis {
+		split.predata = trimWhitespace(input[firstParenthesis+1 : lastParenthesis])
+		input = input[:firstParenthesis] + input[lastParenthesis+1:]
 	}
+
+	firstBracket := strings.Index(input, "[")
+	lastBracket := strings.Index(input, "]")
+
+	if firstBracket != -1 && lastBracket != -1 && firstBracket < lastBracket {
+		split.postdata = trimWhitespace(input[firstBracket+1 : lastBracket])
+		input = input[:firstBracket] + input[lastBracket+1:]
+	}
+
+	split.text = trimWhitespace(input)
 
 	return split, nil
+}
+
+func trimBeginningWhitespace(input string) string {
+	for strings.HasPrefix(input, " ") {
+		input = strings.TrimPrefix(input, " ")
+	}
+
+	return input
+}
+
+func trimEndingWhitespace(input string) string {
+	for strings.HasSuffix(input, " ") {
+		input = strings.TrimSuffix(input, " ")
+	}
+
+	return input
+}
+
+func trimWhitespace(input string) string {
+	return trimBeginningWhitespace(trimEndingWhitespace(input))
 }
