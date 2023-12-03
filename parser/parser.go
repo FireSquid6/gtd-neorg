@@ -2,11 +2,10 @@ package parser
 
 import (
 	"errors"
+	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"regexp"
 	"strings"
-
-	"github.com/firesquid6/negtd/date"
 )
 
 type GtdTask struct {
@@ -168,6 +167,36 @@ func splitAgendaLine(input string) (splitLine, error) {
 	split.text = trimWhitespace(input)
 
 	return split, nil
+}
+
+func parseAgendaTask(line string) (GtdTask, error) {
+	task := GtdTask{
+		text:     "",
+		tags:     []string{},
+		date:     date.EmptyDate(),
+		gotoList: Agenda,
+	}
+
+	split, err := splitAgendaLine(line)
+	if err != nil {
+		return task, err
+	}
+
+	task.text = split.text
+	task.tags = parseTags(split.postdata)
+
+	if split.predata == "" {
+		split.predata = " "
+	}
+	switch string(split.predata[0]) {
+	case "-":
+		task.gotoList = Backlog
+	case ">":
+		// date stuff
+	case "_", "x":
+		task.gotoList = Trash
+	}
+	return task, nil
 }
 
 func trimBeginningWhitespace(input string) string {

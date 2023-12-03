@@ -222,6 +222,14 @@ func Test_splitAgendaTask(t *testing.T) {
 			},
 		},
 		{
+			input: "- (-) This is a task",
+			expected: splitLine{
+				predata:  "-",
+				text:     "This is a task",
+				postdata: "",
+			},
+		},
+		{
 			input: "I should fail",
 			expected: splitLine{
 				predata:  "",
@@ -238,6 +246,44 @@ func Test_splitAgendaTask(t *testing.T) {
 			t.Errorf("Expected no error, got %v", err)
 		}
 		if !reflect.DeepEqual(actual, d.expected) {
+			t.Errorf("Expected %v, got %v", d.expected, actual)
+		}
+	}
+}
+
+func Test_parseAgendaTask(t *testing.T) {
+	data := []struct {
+		input    string
+		expected GtdTask
+		err      error
+	}{
+		{
+			input: "- ( ) This is a task",
+			expected: GtdTask{
+				text:     "This is a task",
+				tags:     []string{},
+				gotoList: Agenda,
+				date:     date.EmptyDate(),
+			},
+			err: nil,
+		},
+		{
+			input: "- (-) This is a task",
+			expected: GtdTask{
+				text:     "This is a task",
+				tags:     []string{},
+				gotoList: Backlog,
+				date:     date.EmptyDate(),
+			},
+		},
+	}
+
+	for _, d := range data {
+		actual, err := parseAgendaTask(d.input)
+		if err != nil && d.err == nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+		if !tasksAreEqual(actual, d.expected) {
 			t.Errorf("Expected %v, got %v", d.expected, actual)
 		}
 	}
