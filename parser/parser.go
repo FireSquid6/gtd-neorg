@@ -169,7 +169,7 @@ func splitAgendaLine(input string) (splitLine, error) {
 	return split, nil
 }
 
-func parseAgendaTask(line string) (GtdTask, error) {
+func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 	task := GtdTask{
 		text:     "",
 		tags:     []string{},
@@ -193,6 +193,13 @@ func parseAgendaTask(line string) (GtdTask, error) {
 		task.gotoList = Backlog
 	case ">":
 		// date stuff
+		dateString := split.predata[1:]
+		dateString = trimWhitespace(dateString)
+		date, err := date.ParseRelativeDate(dateString, currentDate)
+		if err != nil {
+			return GtdTask{}, err
+		}
+		task.date = date
 	case "_", "x":
 		task.gotoList = Trash
 	}

@@ -98,7 +98,7 @@ func ParseRelativeDate(dateString string, currentDate Date) (Date, error) {
 
 		return date, nil
 	default:
-		// try to parse the date
+		// try to parse the date normally
 		date, err := ParseDate(dateString)
 		if err != nil {
 			return Date{0, 0, 0}, err

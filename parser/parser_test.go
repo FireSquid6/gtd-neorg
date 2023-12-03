@@ -57,40 +57,40 @@ func Test_parseInboxTask(t *testing.T) {
 		{
 			input: "This is a task",
 			expected: GtdTask{
-				text:     "This is a task",
-				tags:     []string{},
-				gotoList: Inbox,
-				date:     date.EmptyDate(),
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Inbox,
+				Date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
 		{
 			input: "[_] Send me to the trash",
 			expected: GtdTask{
-				text:     "Send me to the trash",
-				tags:     []string{},
-				gotoList: Trash,
-				date:     date.EmptyDate(),
+				Text:     "Send me to the trash",
+				Tags:     []string{},
+				GotoList: Trash,
+				Date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
 		{
 			input: "[?] Send me to the backlog",
 			expected: GtdTask{
-				text:     "Send me to the backlog",
-				tags:     []string{},
-				gotoList: Backlog,
-				date:     date.EmptyDate(),
+				Text:     "Send me to the backlog",
+				Tags:     []string{},
+				GotoList: Backlog,
+				Date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
 		{
 			input: "[2023-01-01] Send me to the agenda",
 			expected: GtdTask{
-				text:     "Send me to the agenda",
-				tags:     []string{},
-				gotoList: Agenda,
-				date: date.Date{
+				Text:     "Send me to the agenda",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
 					Year:  2023,
 					Month: 1,
 					Day:   1,
@@ -101,10 +101,10 @@ func Test_parseInboxTask(t *testing.T) {
 		{
 			input: "[Today] Send me to the agenda",
 			expected: GtdTask{
-				text:     "Send me to the agenda",
-				tags:     []string{},
-				gotoList: Agenda,
-				date: date.Date{
+				Text:     "Send me to the agenda",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
 					Year:  2023,
 					Month: 1,
 					Day:   1,
@@ -114,10 +114,10 @@ func Test_parseInboxTask(t *testing.T) {
 		}, {
 			input: "[Monday] Send me to the agenda",
 			expected: GtdTask{
-				text:     "Send me to the agenda",
-				tags:     []string{},
-				gotoList: Agenda,
-				date: date.Date{
+				Text:     "Send me to the agenda",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
 					Year:  2023,
 					Month: 1,
 					Day:   2, // January 1st is a Sunday. The next monday is January 2nd.
@@ -128,10 +128,10 @@ func Test_parseInboxTask(t *testing.T) {
 		{
 			input: "[Sunday] Send me to the agenda",
 			expected: GtdTask{
-				text:     "Send me to the agenda",
-				tags:     []string{},
-				gotoList: Agenda,
-				date: date.Date{
+				Text:     "Send me to the agenda",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
 					Year:  2023,
 					Month: 1,
 					Day:   8,
@@ -142,10 +142,10 @@ func Test_parseInboxTask(t *testing.T) {
 		{
 			input: "[Tomorrow] Send me to the agenda",
 			expected: GtdTask{
-				text:     "Send me to the agenda",
-				tags:     []string{},
-				gotoList: Agenda,
-				date: date.Date{
+				Text:     "Send me to the agenda",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
 					Year:  2023,
 					Month: 1,
 					Day:   2,
@@ -156,10 +156,10 @@ func Test_parseInboxTask(t *testing.T) {
 		{
 			input: "I have tags [tag1, tag2]",
 			expected: GtdTask{
-				text:     "I have tags",
-				tags:     []string{"tag1", "tag2"},
-				gotoList: Inbox,
-				date:     date.EmptyDate(),
+				Text:     "I have tags",
+				Tags:     []string{"tag1", "tag2"},
+				GotoList: Inbox,
+				Date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
@@ -260,26 +260,68 @@ func Test_parseAgendaTask(t *testing.T) {
 		{
 			input: "- ( ) This is a task",
 			expected: GtdTask{
-				text:     "This is a task",
-				tags:     []string{},
-				gotoList: Agenda,
-				date:     date.EmptyDate(),
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date:     date.EmptyDate(),
 			},
 			err: nil,
 		},
 		{
 			input: "- (-) This is a task",
 			expected: GtdTask{
-				text:     "This is a task",
-				tags:     []string{},
-				gotoList: Backlog,
-				date:     date.EmptyDate(),
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Backlog,
+				Date:     date.EmptyDate(),
+			},
+		},
+		{
+			input: "- (_) This is a task",
+			expected: GtdTask{
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Trash,
+				Date:     date.EmptyDate(),
+			},
+			err: nil,
+		},
+		{
+			input: "- (> 2023-01-01) This is a task",
+			expected: GtdTask{
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   1,
+				},
+			},
+		},
+		{
+			input: "- (> Today) This is a task",
+			expected: GtdTask{
+				Text:     "This is a task",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
+					Year:  2023,
+					Month: 1,
+					Day:   1,
+				},
 			},
 		},
 	}
 
 	for _, d := range data {
-		actual, err := parseAgendaTask(d.input)
+		currentDate := date.Date{
+			Year:  2023,
+			Month: 1,
+			Day:   1,
+		}
+
+		actual, err := parseAgendaTask(d.input, currentDate)
 		if err != nil && d.err == nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
