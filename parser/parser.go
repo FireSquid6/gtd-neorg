@@ -9,10 +9,10 @@ import (
 )
 
 type GtdTask struct {
-	text     string
-	tags     []string
-	gotoList GtdListName
-	date     date.Date
+	Text     string
+	Tags     []string
+	GotoList GtdListName
+	Date     date.Date
 }
 
 type GtdListName int
@@ -108,23 +108,23 @@ func parseInboxPredata(predata string, currentDate date.Date) (ParsedPredata, er
 // INBOX SPECIFIC PARSING
 func parseInboxTask(line string, currentDate date.Date) (GtdTask, error) {
 	task := GtdTask{
-		text:     "",
-		tags:     []string{},
-		date:     date.EmptyDate(),
-		gotoList: Inbox,
+		Text:     "",
+		Tags:     []string{},
+		Date:     date.EmptyDate(),
+		GotoList: Inbox,
 	}
 
 	split := splitInboxLine(line)
-	task.text = split.text
+	task.Text = split.text
 
 	parsedPredata, err := parseInboxPredata(split.predata, currentDate)
 	if err != nil {
 		return GtdTask{}, err
 	}
-	task.gotoList = parsedPredata.gotoList
-	task.date = parsedPredata.date
+	task.GotoList = parsedPredata.gotoList
+	task.Date = parsedPredata.date
 
-	task.tags = parseTags(split.postdata)
+	task.Tags = parseTags(split.postdata)
 
 	return task, nil
 }
@@ -171,10 +171,10 @@ func splitAgendaLine(input string) (splitLine, error) {
 
 func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 	task := GtdTask{
-		text:     "",
-		tags:     []string{},
-		date:     date.EmptyDate(),
-		gotoList: Agenda,
+		Text:     "",
+		Tags:     []string{},
+		Date:     date.EmptyDate(),
+		GotoList: Agenda,
 	}
 
 	split, err := splitAgendaLine(line)
@@ -182,15 +182,15 @@ func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 		return task, err
 	}
 
-	task.text = split.text
-	task.tags = parseTags(split.postdata)
+	task.Text = split.text
+	task.Tags = parseTags(split.postdata)
 
 	if split.predata == "" {
 		split.predata = " "
 	}
 	switch string(split.predata[0]) {
 	case "-":
-		task.gotoList = Backlog
+		task.GotoList = Backlog
 	case ">":
 		// date stuff
 		dateString := split.predata[1:]
@@ -199,9 +199,9 @@ func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 		if err != nil {
 			return GtdTask{}, err
 		}
-		task.date = date
+		task.Date = date
 	case "_", "x":
-		task.gotoList = Trash
+		task.GotoList = Trash
 	}
 	return task, nil
 }
