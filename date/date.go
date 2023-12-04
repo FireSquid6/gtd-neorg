@@ -83,9 +83,9 @@ func ParseRelativeDate(dateString string, currentDate Date) (Date, error) {
 	case "today":
 		return currentDate, nil
 	case "tomorrow":
-		return incrementDate(currentDate), nil
+		return IncrementDate(currentDate), nil
 	case "yesterday":
-		return decrementDate(currentDate), nil
+		return DecrementDate(currentDate), nil
 	case "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday":
 		weekday, err := GetWeekdayFromString(lowercaseDateString)
 		if err != nil {
@@ -121,35 +121,46 @@ func GetDayOfTheWeek(date Date) (int, error) {
 	return dayOfWeek, nil
 }
 
-func decrementDate(date Date) Date {
+func DecrementDate(date Date) Date {
 	date.Day--
 
 	return validateDate(date)
 }
 
-func incrementDate(date Date) Date {
+func IncrementDate(date Date) Date {
 	date.Day++
 
 	return validateDate(date)
 }
 
+var maxDaysInMonth = map[int]int{
+	1:  31,
+	2:  28,
+	3:  31,
+	4:  30,
+	5:  31,
+	6:  30,
+	7:  31,
+	8:  31,
+	9:  30,
+	10: 31,
+	11: 30,
+	12: 31,
+}
+
 func validateDate(date Date) Date {
-	switch date.Month {
-	case 1, 3, 5, 7, 8, 10, 12:
-		if date.Day > 31 {
-			date.Day = 1
-			date.Month++
+	if date.Day <= 0 {
+		date.Month--
+		if date.Month <= 0 {
+			date.Year--
+			date.Month = 12
 		}
-	case 4, 6, 9, 11:
-		if date.Day > 30 {
-			date.Day = 1
-			date.Month++
-		}
-	case 2:
-		if date.Day > 28 {
-			date.Day = 1
-			date.Month++
-		}
+		date.Day = maxDaysInMonth[date.Month]
+	}
+
+	if date.Day > maxDaysInMonth[date.Month] {
+		date.Day = 1
+		date.Month++
 	}
 
 	if date.Month > 12 {
@@ -177,7 +188,7 @@ func GetNextDayOfTheWeek(weekday Weekday, currentDate Date) (Date, error) {
 
 	// increment the date by the difference
 	for i := 0; i < difference; i++ {
-		currentDate = incrementDate(currentDate)
+		currentDate = IncrementDate(currentDate)
 	}
 
 	return currentDate, nil
