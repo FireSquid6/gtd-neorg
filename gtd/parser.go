@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/firesquid6/negtd/date"
 	"reflect"
-	"regexp"
 	"strings"
 )
 
@@ -40,6 +39,36 @@ func parseTags(postdata string) []string {
 }
 
 // SPLITTING LINES
+func splitString(input string) (splitLine, error) {
+	split := splitLine{
+		predata:  "",
+		text:     "",
+		postdata: "",
+	}
+
+	input = trimBeginningWhitespace(input)
+
+	firstParenthesis := strings.Index(input, "(")
+	lastParenthesis := strings.Index(input, ")")
+
+	if firstParenthesis != -1 && lastParenthesis != -1 && firstParenthesis < lastParenthesis {
+		split.predata = trimWhitespace(input[firstParenthesis+1 : lastParenthesis])
+		input = input[:firstParenthesis] + input[lastParenthesis+1:]
+	}
+
+	firstBracket := strings.Index(input, "[")
+	lastBracket := strings.Index(input, "]")
+
+	if firstBracket != -1 && lastBracket != -1 && firstBracket < lastBracket {
+		split.postdata = trimWhitespace(input[firstBracket+1 : lastBracket])
+		input = input[:firstBracket] + input[lastBracket+1:]
+	}
+
+	split.text = trimWhitespace(input)
+
+	return split, nil
+}
+
 type splitLine struct {
 	predata  string
 	text     string
@@ -47,29 +76,8 @@ type splitLine struct {
 }
 
 func splitInboxLine(line string) (splits splitLine) {
-	re := regexp.MustCompile(`\[(.*?)\]`)
-	matches := re.FindAllStringSubmatch(line, -1)
-
-	predata := ""
-	postdata := ""
-	text := line
-
-	if len(matches) > 0 {
-		if strings.HasPrefix(line, matches[0][0]) {
-			predata = matches[0][1]
-			text = strings.TrimPrefix(line, matches[0][0])
-		} else {
-			postdata = matches[0][1]
-			text = strings.TrimSuffix(line, matches[0][0])
-		}
-		text = strings.TrimSpace(text)
-	}
-
-	return splitLine{
-		predata:  predata,
-		text:     text,
-		postdata: postdata,
-	}
+	splits, _ = splitString(line)
+	return splits
 }
 
 // PARSING PREDATA
@@ -136,37 +144,13 @@ func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
 // AGENDA SPECIFIC PARSING
 func splitAgendaLine(input string) (splitLine, error) {
 	input = trimBeginningWhitespace(input)
-	split := splitLine{
-		predata:  "",
-		text:     "",
-		postdata: "",
-	}
-
 	if !strings.HasPrefix(input, "- ") {
-		return split, errors.New("Line does not start with a dash")
+		return splitLine{}, errors.New("Line does not start with a dash")
 	}
 	input = strings.TrimPrefix(input, "- ")
-	input = trimBeginningWhitespace(input)
+	split, err := splitString(input)
 
-	firstParenthesis := strings.Index(input, "(")
-	lastParenthesis := strings.Index(input, ")")
-
-	if firstParenthesis != -1 && lastParenthesis != -1 && firstParenthesis < lastParenthesis {
-		split.predata = trimWhitespace(input[firstParenthesis+1 : lastParenthesis])
-		input = input[:firstParenthesis] + input[lastParenthesis+1:]
-	}
-
-	firstBracket := strings.Index(input, "[")
-	lastBracket := strings.Index(input, "]")
-
-	if firstBracket != -1 && lastBracket != -1 && firstBracket < lastBracket {
-		split.postdata = trimWhitespace(input[firstBracket+1 : lastBracket])
-		input = input[:firstBracket] + input[lastBracket+1:]
-	}
-
-	split.text = trimWhitespace(input)
-
-	return split, nil
+	return split, err
 }
 
 func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {

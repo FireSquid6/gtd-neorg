@@ -23,7 +23,7 @@ func Test_splitInboxLine(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[between brackets] This is a task",
+			input: "(between brackets) This is a task",
 			expected: splitLine{
 				predata:  "between brackets",
 				text:     "This is a task",
@@ -36,6 +36,14 @@ func Test_splitInboxLine(t *testing.T) {
 				predata:  "",
 				text:     "This has postdata",
 				postdata: "between brackets",
+			},
+		},
+		{
+			input: "(today) I should go to the agenda [tag1, tag2]",
+			expected: splitLine{
+				predata:  "today",
+				text:     "I should go to the agenda",
+				postdata: "tag1, tag2",
 			},
 		},
 	}
@@ -65,7 +73,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[_] Send me to the trash",
+			input: "(_) Send me to the trash",
 			expected: GtdTask{
 				Text:     "Send me to the trash",
 				Tags:     []string{},
@@ -75,7 +83,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[?] Send me to the backlog",
+			input: "(?) Send me to the backlog",
 			expected: GtdTask{
 				Text:     "Send me to the backlog",
 				Tags:     []string{},
@@ -85,7 +93,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[2023-01-01] Send me to the agenda",
+			input: "(2023-01-01) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				Tags:     []string{},
@@ -99,7 +107,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[Today] Send me to the agenda",
+			input: "(Today) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				Tags:     []string{},
@@ -112,7 +120,7 @@ func Test_parseInboxTask(t *testing.T) {
 			},
 			err: nil,
 		}, {
-			input: "[Monday] Send me to the agenda",
+			input: "(Monday) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				Tags:     []string{},
@@ -126,7 +134,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[Sunday] Send me to the agenda",
+			input: "(Sunday) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				Tags:     []string{},
@@ -140,7 +148,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "[Tomorrow] Send me to the agenda",
+			input: "(Tomorrow) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				Tags:     []string{},
