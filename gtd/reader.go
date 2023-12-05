@@ -21,3 +21,30 @@ func ReadInboxFile(file []string, currentDate date.Date) ([]GtdTask, []string) {
 
 	return tasks, errors
 }
+
+func ReadAgendaFile(file []string, currentDate date.Date) ([]GtdTask, []string) {
+	tasks := []GtdTask{}
+	errors := []string{}
+	readingDate := currentDate
+
+	for _, line := range file {
+		if string(line[0]) == "*" {
+			newReadingDate, err := date.ParseDate(line)
+			readingDate = newReadingDate
+			if err != nil {
+				errors = append(errors, "Error parsing agenda date: "+line)
+				continue
+			}
+			continue
+		}
+
+		task, err := parseAgendaTask(line, readingDate)
+		if err != nil {
+			errors = append(errors, "Error parsing agenda task: "+line)
+			continue
+		}
+		tasks = append(tasks, task)
+	}
+
+	return tasks, errors
+}
