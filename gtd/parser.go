@@ -186,9 +186,6 @@ func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 		task.Date = date
 	case "_", "x":
 		task.GotoList = Trash
-	case "!":
-		task.GotoList = Agenda
-		task.Date = date.DecrementDate(currentDate)
 	}
 	return task, nil
 }
