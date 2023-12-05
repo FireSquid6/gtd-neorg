@@ -320,6 +320,19 @@ func Test_parseAgendaTask(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "- (!) Uh oh! I'm late!",
+			expected: GtdTask{
+				Text:     "Uh oh! I'm late!",
+				Tags:     []string{},
+				GotoList: Agenda,
+				Date: date.Date{
+					Year:  2022,
+					Month: 12,
+					Day:   31,
+				},
+			},
+		},
 	}
 
 	for _, d := range data {
