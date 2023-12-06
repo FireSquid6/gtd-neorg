@@ -66,7 +66,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Inbox,
 				Date:     date.EmptyDate(),
 			},
@@ -76,7 +75,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(_) Send me to the trash",
 			expected: GtdTask{
 				Text:     "Send me to the trash",
-				Tags:     []string{},
 				GotoList: Trash,
 				Date:     date.EmptyDate(),
 			},
@@ -86,7 +84,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(?) Send me to the backlog",
 			expected: GtdTask{
 				Text:     "Send me to the backlog",
-				Tags:     []string{},
 				GotoList: Backlog,
 				Date:     date.EmptyDate(),
 			},
@@ -96,7 +93,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(2023-01-01) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -110,7 +106,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(Today) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -123,7 +118,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(Monday) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -137,7 +131,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(Sunday) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -151,7 +144,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "(Tomorrow) Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -165,7 +157,6 @@ func Test_parseInboxTask(t *testing.T) {
 			input: "I have tags [tag1, tag2]",
 			expected: GtdTask{
 				Text:     "I have tags",
-				Tags:     []string{"tag1", "tag2"},
 				GotoList: Inbox,
 				Date:     date.EmptyDate(),
 			},
@@ -269,7 +260,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- ( ) This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date:     date.EmptyDate(),
 			},
@@ -279,7 +269,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- (-) This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Backlog,
 				Date:     date.EmptyDate(),
 			},
@@ -288,7 +277,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- (_) This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Trash,
 				Date:     date.EmptyDate(),
 			},
@@ -298,7 +286,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- (> 2023-01-01) This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -311,7 +298,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- (> Today) This is a task",
 			expected: GtdTask{
 				Text:     "This is a task",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2023,
@@ -324,7 +310,6 @@ func Test_parseAgendaTask(t *testing.T) {
 			input: "- (!) Uh oh! I'm late!",
 			expected: GtdTask{
 				Text:     "Uh oh! I'm late!",
-				Tags:     []string{},
 				GotoList: Agenda,
 				Date: date.Date{
 					Year:  2022,

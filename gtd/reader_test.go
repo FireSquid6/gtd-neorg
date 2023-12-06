@@ -25,13 +25,11 @@ func Test_ReadInboxFile(t *testing.T) {
 			expected: []GtdTask{
 				{
 					Text:     "This is a task",
-					Tags:     []string{},
 					GotoList: Inbox,
 					Date:     date.EmptyDate(),
 				},
 				{
 					Text:     "I should go to the agenda",
-					Tags:     []string{},
 					GotoList: Agenda,
 					Date:     currentDate,
 				},
@@ -43,13 +41,11 @@ func Test_ReadInboxFile(t *testing.T) {
 				// },
 				{
 					Text:     "I should be trashed",
-					Tags:     []string{},
 					GotoList: Trash,
 					Date:     date.EmptyDate(),
 				},
 				{
 					Text:     "eh. Send me to the backlog",
-					Tags:     []string{},
 					GotoList: Backlog,
 					Date:     date.EmptyDate(),
 				},

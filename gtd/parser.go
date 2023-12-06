@@ -9,7 +9,6 @@ import (
 
 type GtdTask struct {
 	Text     string
-	Tags     []string
 	GotoList GtdListName
 	Date     date.Date
 }
