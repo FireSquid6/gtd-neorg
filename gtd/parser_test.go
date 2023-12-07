@@ -21,7 +21,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(_) Send me to the trash",
+			input: "[_] Send me to the trash",
 			expected: GtdTask{
 				Text:     "Send me to the trash",
 				GotoList: Trash,
@@ -30,7 +30,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(?) Send me to the backlog",
+			input: "[?] Send me to the backlog",
 			expected: GtdTask{
 				Text:     "Send me to the backlog",
 				GotoList: Backlog,
@@ -39,7 +39,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(2023-01-01) Send me to the agenda",
+			input: "[2023-01-01] Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				GotoList: Agenda,
@@ -52,7 +52,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(Today) Send me to the agenda",
+			input: "[Today] Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				GotoList: Agenda,
@@ -64,7 +64,7 @@ func Test_parseInboxTask(t *testing.T) {
 			},
 			err: nil,
 		}, {
-			input: "(Monday) Send me to the agenda",
+			input: "[Monday] Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				GotoList: Agenda,
@@ -77,7 +77,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(Sunday) Send me to the agenda",
+			input: "[Sunday] Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				GotoList: Agenda,
@@ -90,7 +90,7 @@ func Test_parseInboxTask(t *testing.T) {
 			err: nil,
 		},
 		{
-			input: "(Tomorrow) Send me to the agenda",
+			input: "[Tomorrow] Send me to the agenda",
 			expected: GtdTask{
 				Text:     "Send me to the agenda",
 				GotoList: Agenda,
