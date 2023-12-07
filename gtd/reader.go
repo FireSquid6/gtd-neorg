@@ -1,9 +1,8 @@
 package gtd
 
 import (
-	"strings"
-
 	"github.com/firesquid6/negtd/date"
+	"strings"
 )
 
 // handles the reading of files and parsing them into structs
