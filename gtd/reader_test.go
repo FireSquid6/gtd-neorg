@@ -17,10 +17,9 @@ func Test_ReadInboxFile(t *testing.T) {
 		{
 			input: []string{
 				"This is a task",
-				"(today) I should go to the agenda",
-				// "[today] I should go to the agenda [tag1, tag2]", ! this isn't working
-				"(_) I should be trashed",
-				"(?) eh. Send me to the backlog",
+				"[today] I should go to the agenda",
+				"[_] I should be trashed",
+				"[?] eh. Send me to the backlog",
 			},
 			expected: []GtdTask{
 				{
@@ -33,12 +32,6 @@ func Test_ReadInboxFile(t *testing.T) {
 					GotoList: Agenda,
 					Date:     currentDate,
 				},
-				// {
-				// 	Text:     "I should go to the agenda",
-				// 	Tags:     []string{"tag1", "tag2"},
-				// 	GotoList: Agenda,
-				// 	Date:     currentDate,
-				// },
 				{
 					Text:     "I should be trashed",
 					GotoList: Trash,
