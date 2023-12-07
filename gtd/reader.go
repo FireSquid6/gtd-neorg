@@ -1,6 +1,8 @@
 package gtd
 
 import (
+	"strings"
+
 	"github.com/firesquid6/negtd/date"
 )
 
@@ -29,6 +31,14 @@ func ReadAgendaFile(file []string, currentDate date.Date) ([]GtdTask, []string) 
 
 	for _, line := range file {
 		if string(line[0]) == "*" {
+			line = trimBeginningWhitespace(line)
+			line = strings.TrimPrefix(line, "*")
+			line = trimBeginningWhitespace(line)
+			split := strings.Split(line, "|")
+			dateString := split[0]
+			dateString = trimBeginningWhitespace(dateString)
+			dateString = trimEndingWhitespace(dateString)
+
 			newReadingDate, err := date.ParseDate(line)
 			readingDate = newReadingDate
 			if err != nil {

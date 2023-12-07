@@ -20,7 +20,6 @@ const (
 	Agenda
 	Backlog
 	Trash
-	Waiting
 )
 
 func tasksAreEqual(task1 GtdTask, task2 GtdTask) bool {
@@ -80,7 +79,7 @@ func parseInboxTask(line string, currentDate date.Date) (GtdTask, error) {
 func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 	task := GtdTask{
 		Text:     "",
-		Date:     date.EmptyDate(),
+		Date:     currentDate,
 		GotoList: Agenda,
 	}
 	line = trimBeginningWhitespace(line)

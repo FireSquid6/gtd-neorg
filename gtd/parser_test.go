@@ -130,6 +130,11 @@ func Test_parseInboxTask(t *testing.T) {
 }
 
 func Test_parseAgendaTask(t *testing.T) {
+	currentDate := date.Date{
+		Year:  2023,
+		Month: 1,
+		Day:   1,
+	}
 	data := []struct {
 		input    string
 		expected GtdTask
@@ -140,7 +145,7 @@ func Test_parseAgendaTask(t *testing.T) {
 			expected: GtdTask{
 				Text:     "This is a task",
 				GotoList: Agenda,
-				Date:     date.EmptyDate(),
+				Date:     currentDate,
 			},
 			err: nil,
 		},
@@ -149,7 +154,7 @@ func Test_parseAgendaTask(t *testing.T) {
 			expected: GtdTask{
 				Text:     "This is a task",
 				GotoList: Backlog,
-				Date:     date.EmptyDate(),
+				Date:     currentDate,
 			},
 		},
 		{
@@ -157,7 +162,7 @@ func Test_parseAgendaTask(t *testing.T) {
 			expected: GtdTask{
 				Text:     "This is a task",
 				GotoList: Trash,
-				Date:     date.EmptyDate(),
+				Date:     currentDate,
 			},
 			err: nil,
 		},
@@ -166,7 +171,7 @@ func Test_parseAgendaTask(t *testing.T) {
 			expected: GtdTask{
 				Text:     "This is a task",
 				GotoList: Trash,
-				Date:     date.EmptyDate(),
+				Date:     currentDate,
 			},
 		},
 		{
@@ -208,11 +213,6 @@ func Test_parseAgendaTask(t *testing.T) {
 	}
 
 	for _, d := range data {
-		currentDate := date.Date{
-			Year:  2023,
-			Month: 1,
-			Day:   1,
-		}
 
 		actual, err := parseAgendaTask(d.input, currentDate)
 		if err != nil && d.err == nil {
