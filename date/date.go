@@ -1,5 +1,8 @@
 package date
 
+// this module implements it's own date package
+// I am aware the golang has a date package, but i wanted to implement my own to learn go
+
 import (
 	"errors"
 	"strconv"
