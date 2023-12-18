@@ -42,18 +42,19 @@ func main() {
 	fileWatcher := watcher.New()
 	fileWatcher.Add(dirname)
 
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case _ = <-fileWatcher.Event:
-	// 			organizeGtdFolder(dirname)
-	// 		case err := <-fileWatcher.Error:
-	// 			log.Fatalln(err)
-	// 		case <-fileWatcher.Closed:
-	// 			return
-	// 		}
-	// 	}
-	// }()
+	go func() {
+		for {
+			select {
+			case _ = <-fileWatcher.Event:
+				log.Println("\nFile updated, reorganizing")
+				organizeGtdFolder(dirname)
+			case err := <-fileWatcher.Error:
+				log.Fatalln(err)
+			case <-fileWatcher.Closed:
+				return
+			}
+		}
+	}()
 	organizeGtdFolder(dirname)
 
 	if err := fileWatcher.Start(time.Millisecond * 100); err != nil {
