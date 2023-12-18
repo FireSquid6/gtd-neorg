@@ -1,9 +1,10 @@
 package gtd
 
 import (
-	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"testing"
+
+	"github.com/firesquid6/negtd/date"
 )
 
 func Test_ReadInboxFile(t *testing.T) {
@@ -56,7 +57,6 @@ func Test_ReadInboxFile(t *testing.T) {
 			t.Errorf("Expected %v, got %v", d.err, errors)
 		}
 	}
-
 }
 
 func Test_ReadAgendaFile(t *testing.T) {
@@ -143,7 +143,6 @@ func Test_ReadAgendaFile(t *testing.T) {
 			if !reflect.DeepEqual(task, d.expected[i]) {
 				t.Errorf("Expected %v, got %v", d.expected[i], task)
 			}
-
 		}
 		if !reflect.DeepEqual(errors, d.err) {
 			t.Errorf("Expected %v, got %v", d.err, errors)

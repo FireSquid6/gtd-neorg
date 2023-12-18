@@ -217,3 +217,30 @@ func GetWeekdayFromString(weekday string) (Weekday, error) {
 		return -1, errors.New("Invalid weekday")
 	}
 }
+
+func IsBefore(date1 Date, date2 Date) bool {
+	// ew!
+	// idk how to do this better tbh
+	if date1.Year < date2.Year {
+		return true
+	}
+	if date1.Year > date2.Year {
+		return false
+	}
+
+	if date1.Month < date2.Month {
+		return true
+	}
+	if date1.Month > date2.Month {
+		return false
+	}
+
+	if date1.Day < date2.Day {
+		return true
+	}
+	if date1.Day > date2.Day {
+		return false
+	}
+
+	return false
+}
