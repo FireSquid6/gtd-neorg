@@ -2,10 +2,13 @@ package main
 
 import (
 	"bufio"
-	"github.com/radovskyb/watcher"
 	"log"
 	"os"
 	"time"
+
+	"github.com/firesquid6/negtd/date"
+	"github.com/firesquid6/negtd/gtd"
+	"github.com/radovskyb/watcher"
 )
 
 type GtdFile struct {
@@ -39,18 +42,19 @@ func main() {
 	fileWatcher := watcher.New()
 	fileWatcher.Add(dirname)
 
-	go func() {
-		for {
-			select {
-			case _ = <-fileWatcher.Event:
-				organizeGtdFolder(dirname)
-			case err := <-fileWatcher.Error:
-				log.Fatalln(err)
-			case <-fileWatcher.Closed:
-				return
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case _ = <-fileWatcher.Event:
+	// 			organizeGtdFolder(dirname)
+	// 		case err := <-fileWatcher.Error:
+	// 			log.Fatalln(err)
+	// 		case <-fileWatcher.Closed:
+	// 			return
+	// 		}
+	// 	}
+	// }()
+	organizeGtdFolder(dirname)
 
 	if err := fileWatcher.Start(time.Millisecond * 100); err != nil {
 		log.Fatalln(err)
@@ -59,7 +63,6 @@ func main() {
 
 func getGtdDir() string {
 	dirname, err := os.UserHomeDir()
-
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -73,24 +76,40 @@ func getGtdDir() string {
 	return notesDir
 }
 
-const numFiles = 7
-
 func organizeGtdFolder(folderPath string) {
-	fileData := readGtdFolder(folderPath)
-	// output the fileData
-	for _, file := range fileData {
-		log.Println(file.Name)
-		for _, line := range file.Lines {
-			log.Println("    " + line)
+	gtdFiles := readGtdFolder(folderPath)
+	tasks := []gtd.GtdTask{}
+	errors := []string{}
+	currentDate := date.GetCurrentDate()
+
+	for _, file := range gtdFiles {
+		switch file.Name {
+		case "inbox", "backlog":
+			newTasks, newErrors := gtd.ReadInboxFile(file.Lines, currentDate)
+			tasks = append(tasks, newTasks...)
+			errors = append(errors, newErrors...)
+		case "agenda":
+			newTasks, newErrors := gtd.ReadAgendaFile(file.Lines, currentDate)
+			tasks = append(tasks, newTasks...)
+			errors = append(errors, newErrors...)
 		}
 	}
+
+	for _, task := range tasks {
+		log.Println(task)
+	}
+	for _, err := range errors {
+		log.Println(err)
+	}
 }
+
+const numFiles = 4
 
 func readGtdFolder(folderPath string) [numFiles]GtdFile {
 	log.Println("Reading your notes:")
 
-	fileNames := [numFiles]string{"in", "next", "done", "future", "projects", "trash", "waiting"}
-	fileData := [numFiles]GtdFile{{}, {}, {}, {}, {}, {}, {}}
+	fileNames := [numFiles]string{"inbox", "agenda", "events", "backlog"}
+	fileData := [numFiles]GtdFile{{}, {}, {}, {}}
 
 	for i, file := range fileNames {
 		filePath := folderPath + "/" + file + ".norg"

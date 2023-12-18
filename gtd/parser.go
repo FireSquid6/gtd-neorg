@@ -2,9 +2,10 @@ package gtd
 
 import (
 	"errors"
-	"github.com/firesquid6/negtd/date"
 	"reflect"
 	"strings"
+
+	"github.com/firesquid6/negtd/date"
 )
 
 type GtdTask struct {

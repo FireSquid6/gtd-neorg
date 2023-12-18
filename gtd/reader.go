@@ -1,8 +1,9 @@
 package gtd
 
 import (
-	"github.com/firesquid6/negtd/date"
 	"strings"
+
+	"github.com/firesquid6/negtd/date"
 )
 
 // handles the reading of files and parsing them into structs
@@ -12,6 +13,10 @@ func ReadInboxFile(file []string, currentDate date.Date) ([]GtdTask, []string) {
 	errors := []string{}
 
 	for _, line := range file {
+		if line == "" {
+			continue
+		}
+
 		task, err := parseInboxTask(line, currentDate)
 		if err != nil {
 			errors = append(errors, "Error parsing inbox task: "+line)
@@ -29,6 +34,10 @@ func ReadAgendaFile(file []string, currentDate date.Date) ([]GtdTask, []string) 
 	readingDate := currentDate
 
 	for _, line := range file {
+		if line == "" {
+			continue
+		}
+
 		if string(line[0]) == "*" {
 			line = trimBeginningWhitespace(line)
 			line = strings.TrimPrefix(line, "*")
