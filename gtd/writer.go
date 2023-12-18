@@ -17,7 +17,8 @@ func WriteAgendaFile(tasks *[]GtdTask) []string {
 	keys = sortDates(keys)
 
 	for _, key := range keys {
-		file = append(file, outputAgendaSection(key, dateMap[key])...)
+		sectionOutput := outputAgendaSection(key, dateMap[key])
+		file = append(file, sectionOutput...)
 		file = append(file, "")
 	}
 

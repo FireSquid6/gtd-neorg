@@ -108,6 +108,11 @@ func Test_mapTasks(t *testing.T) {
 func Test_WriteAgendaFile(t *testing.T) {
 	tasks := []GtdTask{
 		{
+			Text:     "I'm on the second",
+			Date:     date.Date{Year: 2023, Month: 1, Day: 2},
+			GotoList: Agenda,
+		},
+		{
 			Text:     "This is a task",
 			GotoList: Agenda,
 			Date:     date.Date{Year: 2023, Month: 1, Day: 1},
@@ -115,11 +120,6 @@ func Test_WriteAgendaFile(t *testing.T) {
 		{
 			Text:     "I should go to the agenda",
 			Date:     date.Date{Year: 2023, Month: 1, Day: 1},
-			GotoList: Agenda,
-		},
-		{
-			Text:     "I'm on the second",
-			Date:     date.Date{Year: 2023, Month: 1, Day: 2},
 			GotoList: Agenda,
 		},
 	}
@@ -131,9 +131,13 @@ func Test_WriteAgendaFile(t *testing.T) {
 		"",
 		"* 2023-01-02",
 		" - ( ) I'm on the second",
+		"",
 	}
 
 	file := WriteAgendaFile(&tasks)
+	if len(file) != len(expected) {
+		t.Errorf("Expected %v, got %v", len(expected), len(file))
+	}
 
 	for i, line := range file {
 		if line != expected[i] {
