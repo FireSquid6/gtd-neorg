@@ -97,7 +97,7 @@ func parseAgendaTask(line string, currentDate date.Date) (GtdTask, error) {
 	switch string(prefix[0]) {
 	case "-":
 		task.GotoList = Backlog
-	case "_", "x":
+	case "_", "x", "X":
 		task.GotoList = Trash
 	case ">":
 		task.GotoList = Agenda

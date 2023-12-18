@@ -52,6 +52,10 @@ func outputAgendaSection(sectionDate date.Date, tasks []GtdTask) []string {
 func mapTasks(tasks *[]GtdTask) map[date.Date][]GtdTask {
 	dateMap := map[date.Date][]GtdTask{}
 	for _, task := range *tasks {
+		if task.GotoList != Agenda {
+			continue
+		}
+
 		if task.Date != date.EmptyDate() {
 			if _, ok := dateMap[task.Date]; !ok {
 				dateMap[task.Date] = []GtdTask{}
