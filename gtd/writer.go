@@ -43,7 +43,7 @@ func outputAgendaSection(sectionDate date.Date, tasks []GtdTask) []string {
 	section := []string{}
 	section = append(section, "* "+date.DateToString(sectionDate))
 	for _, task := range tasks {
-		section = append(section, " - ( ) "+task.Text)
+		section = append(section, "  - ( ) "+task.Text)
 	}
 
 	return section

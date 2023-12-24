@@ -43,7 +43,7 @@ func getGtdDir() string {
 		log.Fatalln(err)
 	}
 
-	notesDir := dirname + "/notes/gtd"
+	notesDir := dirname + "Dropbox/notes/gtd"
 
 	if _, err := os.Stat(notesDir); os.IsNotExist(err) {
 		os.MkdirAll(notesDir, 0755)
