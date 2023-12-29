@@ -2,11 +2,10 @@ package main
 
 import (
 	"bufio"
-	"log"
-	"os"
-
 	"github.com/firesquid6/negtd/date"
 	"github.com/firesquid6/negtd/gtd"
+	"log"
+	"os"
 )
 
 type GtdFile struct {
@@ -23,6 +22,10 @@ type Tag struct {
 	tagType TagType
 }
 
+type Config struct {
+	directory string
+}
+
 type TagType int
 
 const (
@@ -35,6 +38,25 @@ const (
 func main() {
 	dirname := getGtdDir()
 	organizeGtdFolder(dirname)
+}
+
+func getConfig(homedir string) Config {
+	configPath := homedir + "/.config/negtd/config.yml"
+	config := Config{}
+
+	yamlFile, err := os.Open(configPath)
+	defer yamlFile.Close()
+
+	if err != nil {
+		log.Println("No config file found, creating one")
+		ensureFileExists(configPath)
+		config = Config{
+			directory: homedir + "/Dropbox/notes/gtd",
+		}
+		return config
+	}
+
+	return config
 }
 
 func getGtdDir() string {
